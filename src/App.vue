@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div id="messages" class="j-message">
+    <div id="messages" class="j-message" v-chat-scroll="{always: false, smooth: true}">
       <div v-for="(item, index) in chatList" :key="index">{{item}}</div>
     </div>
     <div class="j-footer">
@@ -72,8 +72,6 @@ export default {
         msg: this.msg,
         room: this.room
       });
-      var container = this.$el.querySelector("#messages");
-      container.scrollTop = container.scrollHeight;
       this.msg = "";
     }
   }
@@ -91,7 +89,8 @@ export default {
 }
 
 .j-message {
-  margin-bottom: 50px;
+  height: 500px;
+  background-color: antiquewhite;
   overflow-y: auto;
 }
 .j-footer {
