@@ -100,7 +100,10 @@ export default {
   border-radius: 5px;
   background-color: #eee;
 }
-.msg:nth-child(even) {
+/* .msg:nth-child(even) {
+  align-self: flex-end;
+} */
+.me {
   align-self: flex-end;
 }
 #input-container {

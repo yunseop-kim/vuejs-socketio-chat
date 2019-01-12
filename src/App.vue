@@ -20,7 +20,12 @@
       <!-- filled dynamically -->
     </section>
     <chat-window title="채팅방" :room="room" :name="name" @open-flag="openFlag" :open="open">
-      <div class="msg" v-for="(message, index) in messages" :key="index">{{message}}</div>
+      <div
+        class="msg"
+        :class="{ me: name === data.name }"
+        v-for="(data, index) in messages"
+        :key="index"
+      >{{data.name}}: {{data.msg}}</div>
     </chat-window>
   </main>
 </template>
