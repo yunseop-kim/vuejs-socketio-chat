@@ -116,6 +116,7 @@ export default {
       this.room = room;
       this.messages = [];
       this.open = true;
+      this.$socket.emit('join', `test/${this.room}`)
     },
     simulateRefreshAction() {
       this.transitionFlag = true;

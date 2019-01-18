@@ -6,7 +6,7 @@ import VueSocketIO from 'vue-socket.io'
 Vue.use(VueChatScroll)
 Vue.use(new VueSocketIO({
   debug: true,
-  connection: 'http://192.168.0.20:3000/chat'
+  connection: 'http://172.20.10.3:3000/chat'
 }))
 
 Vue.config.productionTip = false

@@ -22,6 +22,13 @@ export default {
       msg: ""
     };
   },
+  sockets: {
+    connect: function() {
+      // eslint-disable-next-line
+      console.log("socket connected, chatwindow");
+      this.$socket.emit('join', `test/${this.room}`)
+    }
+  },
   methods: {
     inputMessage() {
       if (this.msg === "") return;
@@ -44,6 +51,7 @@ export default {
     },
     close() {
       this.$emit("open-flag");
+      this.$socket.emit('leave', `test/${this.room}`)
     }
   }
 };
