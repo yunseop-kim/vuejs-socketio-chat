@@ -34,15 +34,17 @@ export default {
       console.log("socket connected, chatwindow");
     },
     chatMessage(data) {
+      // eslint-disable-next-line
       console.log(data)
       this.messages.push(data);
+      // eslint-disable-next-line
       console.log(this.messages)
     }
   },
   watch: {
     room () {
-      this.$socket.emit('leave', `test/${this.room}`)
       this.$socket.emit('join', `test/${this.room}`)
+      this.messages = []
     }
   },
   methods: {

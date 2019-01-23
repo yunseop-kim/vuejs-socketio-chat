@@ -19,7 +19,7 @@
       </div>
       <!-- filled dynamically -->
     </section>
-    <chat-window title="채팅방" :room="room" :name="name" @open-flag="openFlag" :open="open" />
+    <chat-window :title="`채팅방 ${room}`" :room="room" :name="name" @open-flag="openFlag" :open="open" />
   </main>
 </template>
 
@@ -96,6 +96,9 @@ export default {
         window.alert("이름을 입력하지 않으셨습니다!");
         return;
       }
+      if (this.room){
+        this.openFlag()
+      }
       this.room = room;
       this.open = true;
     },
@@ -106,9 +109,13 @@ export default {
       }, 2000);
     },
     openFlag() {
-      // eslint-disable-next-line
-      console.log("openFlag");
-      this.open = !this.open;
+      if(this.open){
+        this.open = false;
+        this.$socket.emit('leave', `test/${this.room}`)
+      } else {
+        this.open = true;
+        this.$socket.emit('join', `test/${this.room}`)
+      }
     }
   }
 };
