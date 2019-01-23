@@ -19,14 +19,7 @@
       </div>
       <!-- filled dynamically -->
     </section>
-    <chat-window title="채팅방" :room="room" :name="name" @open-flag="openFlag" :open="open">
-      <div
-        class="msg"
-        :class="{ me: name === data.name }"
-        v-for="(data, index) in messages"
-        :key="index"
-      >{{data.name}}: {{data.msg}}</div>
-    </chat-window>
+    <chat-window title="채팅방" :room="room" :name="name" @open-flag="openFlag" :open="open" />
   </main>
 </template>
 
@@ -36,15 +29,6 @@ export default {
   name: "app",
   components: {
     "chat-window": ChatWindow
-  },
-  sockets: {
-    connect: function() {
-      // eslint-disable-next-line
-      console.log("socket connected");
-    },
-    chatMessage: function(data) {
-      this.messages.push(data);
-    }
   },
   created() {
     document.addEventListener(
@@ -99,7 +83,6 @@ export default {
         20
       ],
       open: false,
-      messages: [],
       transitionFlag: false,
       startY: 0
     };
@@ -114,9 +97,7 @@ export default {
         return;
       }
       this.room = room;
-      this.messages = [];
       this.open = true;
-      this.$socket.emit('join', `test/${this.room}`)
     },
     simulateRefreshAction() {
       this.transitionFlag = true;

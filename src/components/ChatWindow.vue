@@ -6,7 +6,12 @@
     </div>
     <div class="msgs-container">
       <div class="msgs" v-chat-scroll="{always: false, smooth: true}">
-        <slot></slot>
+        <div
+          class="msg"
+          :class="{ me: name === data.name }"
+          v-for="(data, index) in messages"
+          :key="index"
+        >{{data.name}}: {{data.msg}}</div>
       </div>
       <div id="input-container">
         <input type="text" placeholder="Enter text" v-model="msg" @keyup.enter="inputMessage(msg)">
@@ -19,13 +24,24 @@ export default {
   props: ["title", "open", "room", "name"],
   data() {
     return {
-      msg: ""
+      msg: "",
+      messages: []
     };
   },
   sockets: {
-    connect: function() {
+    connect() {
       // eslint-disable-next-line
       console.log("socket connected, chatwindow");
+    },
+    chatMessage(data) {
+      console.log(data)
+      this.messages.push(data);
+      console.log(this.messages)
+    }
+  },
+  watch: {
+    room () {
+      this.$socket.emit('leave', `test/${this.room}`)
       this.$socket.emit('join', `test/${this.room}`)
     }
   },
@@ -51,7 +67,9 @@ export default {
     },
     close() {
       this.$emit("open-flag");
-      this.$socket.emit('leave', `test/${this.room}`)
+      if(this.room){
+        this.$socket.emit('leave', `test/${this.room}`)
+      }
     }
   }
 };
