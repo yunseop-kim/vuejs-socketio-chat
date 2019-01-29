@@ -29,22 +29,57 @@ export default {
     };
   },
   sockets: {
-    connect() {
-      // eslint-disable-next-line
-      console.log("socket connected, chatwindow");
-    },
+    // connect() {
+    //   // eslint-disable-next-line
+    //   console.log("socket connected, chatwindow");
+    // },
     chatMessage(data) {
       // eslint-disable-next-line
-      console.log(data)
+      console.log(data);
       this.messages.push(data);
       // eslint-disable-next-line
-      console.log(this.messages)
+      console.log(this.messages);
+    },
+    join(data){
+      // eslint-disable-next-line
+      console.log('userJoin', data);
+    },
+    leave(data){
+      // eslint-disable-next-line
+      console.log('userJoin', data);
+    },
+    userJoin(data) {
+      // eslint-disable-next-line
+      console.log('userJoin', data);
+      this.messages.push(data);
+    },
+    userLeft(data) {
+      // eslint-disable-next-line
+      console.log('userLeft', data);
+      this.messages.push(data);
+    },
+    you(data) {
+      // eslint-disable-next-line
+      console.log('you:', data)
+    },
+    rooms(data) {
+      // eslint-disable-next-line
+      console.log("App!! - room list", data);
+    },
+    kicked(data) {
+      // eslint-disable-next-line
+      console.log(data);
     }
   },
   watch: {
-    room () {
-      this.$socket.emit('join', `test/${this.room}`)
-      this.messages = []
+    room() {
+      this.$socket.emit("join", {
+        name: this.name,
+        room: `test/${this.room}`
+      });
+      this.$socket.emit("join", `rooms`);
+      this.$socket.emit("rooms", `test/${this.room}`);
+      this.messages = [];
     }
   },
   methods: {
@@ -69,8 +104,8 @@ export default {
     },
     close() {
       this.$emit("open-flag");
-      if(this.room){
-        this.$socket.emit('leave', `test/${this.room}`)
+      if (this.room) {
+        this.$socket.emit("leave", `test/${this.room}`);
       }
     }
   }

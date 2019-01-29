@@ -19,7 +19,13 @@
       </div>
       <!-- filled dynamically -->
     </section>
-    <chat-window :title="`채팅방 ${room}`" :room="room" :name="name" @open-flag="openFlag" :open="open" />
+    <chat-window
+      :title="`채팅방 ${room}`"
+      :room="room"
+      :name="name"
+      @open-flag="openFlag"
+      :open="open"
+    />
   </main>
 </template>
 
@@ -29,6 +35,21 @@ export default {
   name: "app",
   components: {
     "chat-window": ChatWindow
+  },
+  sockets: {
+    connect() {
+      // eslint-disable-next-line
+      console.log("App - socket connected");
+    },
+    disconnect() {
+      // eslint-disable-next-line
+      console.log("App - socket disconnected");
+      this.$socket.emit("leave", `admin`);
+    },
+    rooms(data) {
+      // eslint-disable-next-line
+      console.log("App - room list", data);
+    }
   },
   created() {
     document.addEventListener(
@@ -96,8 +117,8 @@ export default {
         window.alert("이름을 입력하지 않으셨습니다!");
         return;
       }
-      if (this.room){
-        this.openFlag()
+      if (this.room) {
+        this.openFlag();
       }
       this.room = room;
       this.open = true;
@@ -109,12 +130,18 @@ export default {
       }, 2000);
     },
     openFlag() {
-      if(this.open){
+      if (this.open) {
         this.open = false;
-        this.$socket.emit('leave', `test/${this.room}`)
+        this.$socket.emit("leave", {
+          name: this.name,
+          room: `test/${this.room}`
+        });
       } else {
         this.open = true;
-        this.$socket.emit('join', `test/${this.room}`)
+        this.$socket.emit("join", {
+          name: this.name,
+          room: `test/${this.room}`
+        });
       }
     }
   }
