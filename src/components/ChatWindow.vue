@@ -11,7 +11,10 @@
           :class="{ me: name === data.name }"
           v-for="(data, index) in messages"
           :key="index"
-        >{{data.name}}: {{data.msg}}</div>
+        >
+        <span>{{data.name}}: {{data.msg}}</span>
+        <div @click="kick(data.socketId)">강퇴</div>
+        </div>
       </div>
       <div id="input-container">
         <input type="text" placeholder="Enter text" v-model="msg" @keyup.enter="inputMessage(msg)">
@@ -61,10 +64,13 @@ export default {
     you(data) {
       // eslint-disable-next-line
       console.log('you:', data)
+      if(data.type === 'kick') {
+        this.close()
+      }
     },
     rooms(data) {
       // eslint-disable-next-line
-      console.log("App!! - room list", data);
+      console.log("chat - room list", data);
     },
     kicked(data) {
       // eslint-disable-next-line
@@ -106,6 +112,14 @@ export default {
       this.$emit("open-flag");
       if (this.room) {
         this.$socket.emit("leave", `test/${this.room}`);
+      }
+    },
+    kick(socketId) {
+      if (window.confirm(`${socketId} 사용자를 강퇴합니다. 계속하시겠습니까?`)) {
+      this.$socket.emit("kick", {
+          room: this.room,
+          socketId
+        });
       }
     }
   }
