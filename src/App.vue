@@ -5,6 +5,7 @@
       <div>
         <h2>채팅 앱</h2>
       </div>
+      <button @click="openChatRoom()">방 만들기</button>
     </header>
     <div class="refresher">
       <div class="loading-bar"></div>
@@ -17,6 +18,7 @@
         <span>채팅방 {{room}}</span>
         <span>5:30 PM</span>
       </div>
+
       <!-- filled dynamically -->
     </section>
     <chat-window
@@ -49,6 +51,11 @@ export default {
     rooms(data) {
       // eslint-disable-next-line
       console.log("App - room list", data);
+      this.rooms = Object
+        .keys(data)
+        .filter(item => item
+        .startsWith('test'))
+        .map(item => item.split("test/")[1])
     }
   },
   created() {
@@ -81,28 +88,7 @@ export default {
       name: "",
       room: "",
       msg: "",
-      rooms: [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6,
-        7,
-        8,
-        9,
-        10,
-        11,
-        12,
-        13,
-        14,
-        15,
-        16,
-        17,
-        18,
-        19,
-        20
-      ],
+      rooms: [],
       open: false,
       transitionFlag: false,
       startY: 0
@@ -110,6 +96,11 @@ export default {
   },
   methods: {
     openChatRoom(room) {
+      if (!room) {
+        this.room = window.prompt("방 이름을 입력해주세요")
+      } else {
+        this.room = room;
+      }
       if (this.name === "" || this.name === null) {
         this.name = window.prompt("이름을 입력해주세요.");
       }
@@ -120,7 +111,7 @@ export default {
       if (this.room) {
         this.openFlag();
       }
-      this.room = room;
+      // this.room = room;
       this.open = true;
     },
     simulateRefreshAction() {
