@@ -14,6 +14,7 @@
         >
         <span>{{data.name}}: {{data.msg}}</span>
         <div @click="kick(data.socketId)">강퇴</div>
+        <div @click="whisper(data.socketId)">귓속말</div>
         </div>
       </div>
       <div id="input-container">
@@ -61,11 +62,15 @@ export default {
       console.log('userLeft', data);
       this.messages.push(data);
     },
-    you(data) {
+    whisper(data) {
       // eslint-disable-next-line
-      console.log('you:', data)
+      console.log('whisper:', data)
       if(data.type === 'kick') {
+        window.alert('강퇴 당하셨습니다.')
         this.close()
+      }
+      if(data.type === 'whisper') {
+        this.messages.push(data);
       }
     },
     rooms(data) {
@@ -121,6 +126,15 @@ export default {
           socketId
         });
       }
+    },
+    whisper(socketId) {
+      const whisper = window.prompt('귓속말:')
+      this.$socket.emit("whisper", {
+        room: this.room,
+        to: socketId,
+        from: this.name,
+        msg: whisper
+      })
     }
   }
 };
@@ -128,12 +142,13 @@ export default {
 <style>
 #chat-window-template {
   display: block;
-  max-width: 250px;
+  max-width: 350px;
   background: #fff;
   contain: content;
   position: fixed;
   bottom: 0;
   right: 16px;
+  width: 300px;
 }
 #chat-window-template .msgs {
   display: flex;

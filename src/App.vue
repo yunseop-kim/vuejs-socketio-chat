@@ -51,11 +51,7 @@ export default {
     rooms(data) {
       // eslint-disable-next-line
       console.log("App - room list", data);
-      this.rooms = Object
-        .keys(data)
-        .filter(item => item
-        .startsWith('test'))
-        .map(item => item.split("test/")[1])
+      this.rooms = data
     }
   },
   created() {
