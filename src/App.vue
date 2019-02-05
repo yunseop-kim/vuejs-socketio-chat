@@ -5,7 +5,7 @@
       <div>
         <h2>채팅 앱</h2>
       </div>
-      <button @click="openChatRoom()">방 만들기</button>
+      <button @click="createChatRoom">방 만들기</button>
     </header>
     <div class="refresher">
       <div class="loading-bar"></div>
@@ -14,7 +14,7 @@
       <div class="loading-bar"></div>
     </div>
     <section id="inbox">
-      <div v-for="(room, index) in rooms" :key="index" @click="openChatRoom(room)">
+      <div v-for="(room, index) in rooms" :key="index" @click="open(room)">
         <span>채팅방 {{room}}</span>
         <span>5:30 PM</span>
       </div>
@@ -22,17 +22,16 @@
       <!-- filled dynamically -->
     </section>
     <chat-window
-      :title="`채팅방 ${room}`"
-      :room="room"
-      :name="name"
-      @open-flag="openFlag"
-      :open="open"
+      :open="roomFixed"
+      :user="user"
+      @close="close"
     />
   </main>
 </template>
 
 <script>
 import ChatWindow from "./components/ChatWindow.vue";
+import { User } from './models/User.js';
 export default {
   name: "app",
   components: {
@@ -78,58 +77,37 @@ export default {
       },
       { passive: true }
     );
+    this.user = new User()
   },
   data() {
     return {
-      name: "",
-      room: "",
-      msg: "",
+      user: null,
       rooms: [],
-      open: false,
+      roomFixed: false,
       transitionFlag: false,
       startY: 0
     };
   },
   methods: {
-    openChatRoom(room) {
-      if (!room) {
-        this.room = window.prompt("방 이름을 입력해주세요")
-      } else {
-        this.room = room;
+    createChatRoom() {
+      const result = this.user.createRoom()
+      if (result) {
+        this.open()
       }
-      if (this.name === "" || this.name === null) {
-        this.name = window.prompt("이름을 입력해주세요.");
-      }
-      if (this.name === "" || this.name === null) {
-        window.alert("이름을 입력하지 않으셨습니다!");
-        return;
-      }
-      if (this.room) {
-        this.openFlag();
-      }
-      // this.room = room;
-      this.open = true;
+    },
+    open(room = null) {
+      this.roomFixed = true
+      this.user.join(room)
+    },
+    close() {
+      this.roomFixed = false
+      this.user.leave()
     },
     simulateRefreshAction() {
       this.transitionFlag = true;
       setTimeout(() => {
         this.transitionFlag = false;
       }, 2000);
-    },
-    openFlag() {
-      if (this.open) {
-        this.open = false;
-        this.$socket.emit("leave", {
-          name: this.name,
-          room: `test/${this.room}`
-        });
-      } else {
-        this.open = true;
-        this.$socket.emit("join", {
-          name: this.name,
-          room: `test/${this.room}`
-        });
-      }
     }
   }
 };

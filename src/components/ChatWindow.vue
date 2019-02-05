@@ -8,13 +8,13 @@
       <div class="msgs" v-chat-scroll="{always: false, smooth: true}">
         <div
           class="msg"
-          :class="{ me: name === data.name }"
+          :class="{ me: user.name === data.name }"
           v-for="(data, index) in messages"
           :key="index"
         >
-        <span>{{data.name}}: {{data.msg}}</span>
-        <div @click="kick(data.socketId)">강퇴</div>
-        <div @click="whisper(data.socketId)">귓속말</div>
+          <span>{{data.name}}: {{data.msg}}</span>
+          <div @click="kick(data.socketId)">강퇴</div>
+          <div @click="whisper(data.socketId)">귓속말</div>
         </div>
       </div>
       <div id="input-container">
@@ -24,11 +24,20 @@
   </div>
 </template>
 <script>
+import { User } from "../models/User.js";
 export default {
-  props: ["title", "open", "room", "name"],
+  props: {
+    open: {
+      type: Boolean
+    },
+    user: {
+      type: User
+    }
+  },
   data() {
     return {
       msg: "",
+      title: null,
       messages: []
     };
   },
@@ -44,32 +53,14 @@ export default {
       // eslint-disable-next-line
       console.log(this.messages);
     },
-    join(data){
-      // eslint-disable-next-line
-      console.log('userJoin', data);
-    },
-    leave(data){
-      // eslint-disable-next-line
-      console.log('userJoin', data);
-    },
-    userJoin(data) {
-      // eslint-disable-next-line
-      console.log('userJoin', data);
-      this.messages.push(data);
-    },
-    userLeft(data) {
-      // eslint-disable-next-line
-      console.log('userLeft', data);
-      this.messages.push(data);
-    },
     whisper(data) {
       // eslint-disable-next-line
-      console.log('whisper:', data)
-      if(data.type === 'kick') {
-        window.alert('강퇴 당하셨습니다.')
-        this.close()
+      console.log("whisper:", data);
+      if (data.type === "kick") {
+        window.alert("강퇴 당하셨습니다.");
+        this.close();
       }
-      if(data.type === 'whisper') {
+      if (data.type === "whisper") {
         this.messages.push(data);
       }
     },
@@ -82,59 +73,24 @@ export default {
       console.log(data);
     }
   },
-  watch: {
-    room() {
-      this.$socket.emit("join", {
-        name: this.name,
-        room: `test/${this.room}`
-      });
-      this.$socket.emit("join", `rooms`);
-      this.$socket.emit("rooms", `test/${this.room}`);
-      this.messages = [];
-    }
-  },
   methods: {
     inputMessage() {
       if (this.msg === "") return;
-      if (this.room === "") {
-        window.alert("방명을 입력하세요.");
-        return;
-      }
-      if (this.name === "") {
-        window.alert("이름을 입력하세요.");
-        return;
-      }
       // $socket is socket.io-client instance
-      this.$socket.emit("chatMessage", {
-        name: this.name,
-        userid: this.name,
-        msg: this.msg,
-        room: this.room
-      });
+      this.user.chat(this.msg)
       this.msg = "";
     },
     close() {
-      this.$emit("open-flag");
-      if (this.room) {
-        this.$socket.emit("leave", `test/${this.room}`);
+      this.$emit("close");
+    },
+    kick(target) {
+      if (window.confirm(`${target} 사용자를 강퇴합니다. 계속하시겠습니까?`)) {
+        this.user.kick(target)
       }
     },
-    kick(socketId) {
-      if (window.confirm(`${socketId} 사용자를 강퇴합니다. 계속하시겠습니까?`)) {
-      this.$socket.emit("kick", {
-          room: this.room,
-          socketId
-        });
-      }
-    },
-    whisper(socketId) {
-      const whisper = window.prompt('귓속말:')
-      this.$socket.emit("whisper", {
-        room: this.room,
-        to: socketId,
-        from: this.name,
-        msg: whisper
-      })
+    whisper(target) {
+      const message = window.prompt("귓속말:");
+      this.user.whisper(target, message)
     }
   }
 };
